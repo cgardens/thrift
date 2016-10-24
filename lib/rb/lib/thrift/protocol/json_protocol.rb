@@ -1,5 +1,5 @@
 # encoding: UTF-8
-# 
+#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements. See the NOTICE file
 # distributed with this work for additional information
@@ -7,16 +7,16 @@
 # to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
 # with the License. You may obtain a copy of the License at
-# 
+#
 #   http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 # KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations
 # under the License.
-# 
+#
 
 require 'base64'
 
@@ -410,7 +410,7 @@ module Thrift
       write_json_string(get_type_name_for_type_id(type))
       write_json_string('value')
 
-      trans.write(',')
+      # trans.write(',')
       # write_comma # ,
 
     end
@@ -422,10 +422,14 @@ module Thrift
     def write_field_stop; nil; end
 
     def write_map_begin(ktype, vtype, size)
-      write_json_array_start
+      write_json_object_start
+      write_json_string('key_type')
       write_json_string(get_type_name_for_type_id(ktype))
+      write_json_string('value_type')
       write_json_string(get_type_name_for_type_id(vtype))
+      write_json_string('size')
       write_json_integer(size)
+      write_json_string('entries')
       write_json_object_start
     end
 
@@ -445,9 +449,14 @@ module Thrift
     end
 
     def write_set_begin(etype, size)
-      write_json_array_start
+      write_json_object_start
+      write_json_string('element_type')
       write_json_string(get_type_name_for_type_id(etype))
+      write_json_string('size')
       write_json_integer(size)
+      write_json_string('elements')
+      write_json_array_start
+
     end
 
     def write_set_end
