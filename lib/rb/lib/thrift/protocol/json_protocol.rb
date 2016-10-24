@@ -435,7 +435,8 @@ module Thrift
 
     def write_map_end
       write_json_object_end
-      write_json_array_end
+      write_json_object_end
+      # write_json_array_end
     end
 
     def write_list_begin(etype, size)
@@ -461,6 +462,7 @@ module Thrift
 
     def write_set_end
       write_json_array_end
+      write_json_object_end
     end
 
     def write_bool(bool)
