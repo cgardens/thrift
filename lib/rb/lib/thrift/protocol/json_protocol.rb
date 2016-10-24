@@ -440,13 +440,18 @@ module Thrift
     end
 
     def write_list_begin(etype, size)
-      write_json_array_start
+      write_json_object_start
+      write_json_string('element_type')
       write_json_string(get_type_name_for_type_id(etype))
+      write_json_string('size')
       write_json_integer(size)
+      write_json_string('elements')
+      write_json_array_start
     end
 
     def write_list_end
       write_json_array_end
+      write_json_object_end
     end
 
     def write_set_begin(etype, size)
