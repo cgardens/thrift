@@ -401,9 +401,18 @@ module Thrift
     end
 
     def write_field_begin(name, type, id)
-      write_json_integer(id)
-      write_json_object_start
+
+      write_json_string(name) # <field_name>
+      write_json_object_start # :{
+      write_json_string('field_id') # 1
+      write_json_integer(id) # <id>
+      write_json_string('type')
       write_json_string(get_type_name_for_type_id(type))
+      write_json_string('value')
+
+      trans.write(',')
+      # write_comma # ,
+
     end
 
     def write_field_end
