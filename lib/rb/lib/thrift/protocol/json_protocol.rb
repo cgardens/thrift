@@ -718,9 +718,17 @@ module Thrift
       if (ch == @@kJSONObjectEnd)
         field_type = Types::STOP
       else
-        field_id = read_json_integer
+        read_json_string
         read_json_object_start
+        read_json_string
+        field_id = read_json_integer
+        read_json_string
         field_type = get_type_id_for_type_name(read_json_string)
+        read_json_string
+
+        # field_id = read_json_integer
+        # read_json_object_start
+        # field_type = get_type_id_for_type_name(read_json_string)
       end
       [nil, field_type, field_id]
     end
@@ -730,35 +738,58 @@ module Thrift
     end
 
     def read_map_begin
-      read_json_array_start
+      read_json_object_start # {
+
+      read_json_string # "key_type"
       key_type = get_type_id_for_type_name(read_json_string)
+      read_json_string # "value_type"
       val_type = get_type_id_for_type_name(read_json_string)
+      read_json_string # "size"
       size = read_json_integer
+      read_json_string # "entries"
+      # @reader.read
+      # @@kJSONPairSeparator
       read_json_object_start
       [key_type, val_type, size]
     end
 
     def read_map_end
       read_json_object_end
-      read_json_array_end
+      read_json_object_end
+      # read_json_object_end
+      # read_json_array_end
     end
 
     def read_list_begin
+      read_json_object_start
+      read_json_string # "element_type"
+      type_name = read_json_string
+      read_json_string # "size"
+      size = read_json_integer
+      read_json_string # "elements"
       read_json_array_start
-      [get_type_id_for_type_name(read_json_string), read_json_integer]
+      [get_type_id_for_type_name(type_name), size]
     end
 
     def read_list_end
       read_json_array_end
+      read_json_object_end
     end
 
     def read_set_begin
+      read_json_object_start
+      read_json_string # "element_type"
+      type_name = read_json_string
+      read_json_string # "size"
+      size = read_json_integer
+      read_json_string # "elements"
       read_json_array_start
-      [get_type_id_for_type_name(read_json_string), read_json_integer]
+      [get_type_id_for_type_name(type_name), size]
     end
 
     def read_set_end
       read_json_array_end
+      read_json_object_end
     end
 
     def read_bool
