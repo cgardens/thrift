@@ -100,7 +100,7 @@ module Thrift
       else
         ch = (@colon ? @@kJSONPairSeparator : @@kJSONElemSeparator)
         @colon = !@colon
-        JsonProtocol::read_syntax_char(reader, ch)
+        HumanReadableJsonProtocol::read_syntax_char(reader, ch)
       end
     end
 
@@ -129,12 +129,12 @@ module Thrift
       if (@first)
         @first = false
       else
-        JsonProtocol::read_syntax_char(reader, @@kJSONElemSeparator)
+        HumanReadableJsonProtocol::read_syntax_char(reader, @@kJSONElemSeparator)
       end
     end
   end
 
-  class JsonProtocol < BaseProtocol
+  class HumanReadableJsonProtocol < BaseProtocol
 
     @@kJSONObjectStart = '{'
     @@kJSONObjectEnd = '}'
@@ -511,7 +511,7 @@ module Thrift
 
     # Reads 1 byte and verifies that it matches ch.
     def read_json_syntax_char(ch)
-      JsonProtocol::read_syntax_char(@reader, ch)
+      HumanReadableJsonProtocol::read_syntax_char(@reader, ch)
     end
 
     # Decodes the four hex parts of a JSON escaped string character and returns
@@ -829,9 +829,9 @@ module Thrift
     end
   end
 
-  class JsonProtocolFactory < BaseProtocolFactory
+  class HumanReadableJsonProtocolFactory < BaseProtocolFactory
     def get_protocol(trans)
-      return Thrift::JsonProtocol.new(trans)
+      return Thrift::HumanReadableJsonProtocol.new(trans)
     end
   end
 end
