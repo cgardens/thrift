@@ -300,6 +300,9 @@ module Thrift
     def write_json_string(str)
       @context.write(trans)
       trans.write(@@kJSONStringDelimiter)
+      if str.is_a?(Symbol)
+        str = str.to_s
+      end
       str.split('').each do |ch|
         write_json_char(ch)
       end
