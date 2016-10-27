@@ -160,7 +160,7 @@ module Thrift
     def get_type_name_for_type_id(id)
       case id
       when Types::BOOL
-        "tf"
+        "bool"
       when Types::BYTE
         "i8"
       when Types::I16
@@ -170,24 +170,24 @@ module Thrift
       when Types::I64
         "i64"
       when Types::DOUBLE
-        "dbl"
+        "double"
       when Types::STRING
-        "str"
+        "string"
       when Types::STRUCT
-        "rec"
+        "struct"
       when Types::MAP
         "map"
       when Types::SET
         "set"
       when Types::LIST
-        "lst"
+        "list"
       else
         raise NotImplementedError
       end
     end
 
     def get_type_id_for_type_name(name)
-      if (name == "tf")
+      if (name == "bool")
         result = Types::BOOL
       elsif (name == "i8")
         result = Types::BYTE
@@ -197,17 +197,17 @@ module Thrift
         result = Types::I32
       elsif (name == "i64")
         result = Types::I64
-      elsif (name == "dbl")
+      elsif (name == "double")
         result = Types::DOUBLE
-      elsif (name == "str")
+      elsif (name == "string")
         result = Types::STRING
-      elsif (name == "rec")
+      elsif (name == "struct")
         result = Types::STRUCT
       elsif (name == "map")
         result = Types::MAP
       elsif (name == "set")
         result = Types::SET
-      elsif (name == "lst")
+      elsif (name == "list")
         result = Types::LIST
       else
         result = Types::STOP
@@ -397,9 +397,16 @@ module Thrift
 
     def write_struct_begin(name)
       write_json_object_start
+      write_json_string('struct_name')
+      struct_name = name.split('::').last
+      write_json_string(struct_name)
+      write_json_integer('fields')
+      write_json_object_start
+
     end
 
     def write_struct_end
+      write_json_object_end
       write_json_object_end
     end
 
@@ -707,10 +714,15 @@ module Thrift
 
     def read_struct_begin
       read_json_object_start
+      read_json_string # 'struct_name'
+      read_json_string # '<struct_name>'
+      read_json_string # 'fields'
+      read_json_object_start # '{'
       nil
     end
 
     def read_struct_end
+      read_json_object_end
       read_json_object_end
       nil
     end
