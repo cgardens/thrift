@@ -43,6 +43,7 @@ require 'thrift/protocol/binary_protocol'
 require 'thrift/protocol/binary_protocol_accelerated'
 require 'thrift/protocol/compact_protocol'
 require 'thrift/protocol/json_protocol'
+require 'thrift/protocol/human_readable_json_protocol'
 require 'thrift/protocol/multiplexed_protocol'
 
 # transport
