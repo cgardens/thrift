@@ -123,18 +123,18 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write struct begin" do
       @prot.write_struct_begin("name")
-      @trans.read(@trans.available).should == "{"
+      @trans.read(@trans.available).should == "{\"struct_name\":\"name\",\"fields\":{"
     end
 
     it "should write struct end" do
       @prot.write_struct_end
-      @trans.read(@trans.available).should == "}"
+      @trans.read(@trans.available).should == "}}"
     end
 
     it "should write field begin" do
       @prot.write_json_object_start
       @prot.write_field_begin("name", Thrift::Types::STRUCT, 32)
-      @trans.read(@trans.available).should == "{\"name\":{\"field_id\":32,\"type\":\"rec\",\"value\""
+      @trans.read(@trans.available).should == "{\"name\":{\"field_id\":32,\"type\":\"struct\",\"value\""
     end
 
     it "should write field end" do
@@ -149,7 +149,7 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write map begin" do
       @prot.write_map_begin(Thrift::Types::STRUCT, Thrift::Types::LIST, 32)
-      @trans.read(@trans.available).should == "{\"key_type\":\"rec\",\"value_type\":\"lst\",\"size\":32,\"entries\":{"
+      @trans.read(@trans.available).should == "{\"key_type\":\"struct\",\"value_type\":\"list\",\"size\":32,\"entries\":{"
     end
 
     it "should write map end" do
@@ -159,7 +159,7 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write list begin" do
       @prot.write_list_begin(Thrift::Types::STRUCT, 32)
-      @trans.read(@trans.available).should == "{\"element_type\":\"rec\",\"size\":32,\"elements\":["
+      @trans.read(@trans.available).should == "{\"element_type\":\"struct\",\"size\":32,\"elements\":["
     end
 
     it "should write list end" do
@@ -169,7 +169,7 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write set begin" do
       @prot.write_set_begin(Thrift::Types::STRUCT, 32)
-      @trans.read(@trans.available).should == "{\"element_type\":\"rec\",\"size\":32,\"elements\":["
+      @trans.read(@trans.available).should == "{\"element_type\":\"struct\",\"size\":32,\"elements\":["
     end
 
     it "should write set end" do
@@ -256,32 +256,32 @@ describe 'HumanReadableJsonProtocol' do
     it "should get type name for type id" do
       expect {@prot.get_type_name_for_type_id(Thrift::Types::STOP)}.to raise_error(NotImplementedError)
       expect {@prot.get_type_name_for_type_id(Thrift::Types::VOID)}.to raise_error(NotImplementedError)
-      @prot.get_type_name_for_type_id(Thrift::Types::BOOL).should == "tf"
+      @prot.get_type_name_for_type_id(Thrift::Types::BOOL).should == "bool"
       @prot.get_type_name_for_type_id(Thrift::Types::BYTE).should == "i8"
-      @prot.get_type_name_for_type_id(Thrift::Types::DOUBLE).should == "dbl"
+      @prot.get_type_name_for_type_id(Thrift::Types::DOUBLE).should == "double"
       @prot.get_type_name_for_type_id(Thrift::Types::I16).should == "i16"
       @prot.get_type_name_for_type_id(Thrift::Types::I32).should == "i32"
       @prot.get_type_name_for_type_id(Thrift::Types::I64).should == "i64"
-      @prot.get_type_name_for_type_id(Thrift::Types::STRING).should == "str"
-      @prot.get_type_name_for_type_id(Thrift::Types::STRUCT).should == "rec"
+      @prot.get_type_name_for_type_id(Thrift::Types::STRING).should == "string"
+      @prot.get_type_name_for_type_id(Thrift::Types::STRUCT).should == "struct"
       @prot.get_type_name_for_type_id(Thrift::Types::MAP).should == "map"
       @prot.get_type_name_for_type_id(Thrift::Types::SET).should == "set"
-      @prot.get_type_name_for_type_id(Thrift::Types::LIST).should == "lst"
+      @prot.get_type_name_for_type_id(Thrift::Types::LIST).should == "list"
     end
 
     it "should get type id for type name" do
       expect {@prot.get_type_id_for_type_name("pp")}.to raise_error(NotImplementedError)
-      @prot.get_type_id_for_type_name("tf").should == Thrift::Types::BOOL
+      @prot.get_type_id_for_type_name("bool").should == Thrift::Types::BOOL
       @prot.get_type_id_for_type_name("i8").should == Thrift::Types::BYTE
-      @prot.get_type_id_for_type_name("dbl").should == Thrift::Types::DOUBLE
+      @prot.get_type_id_for_type_name("double").should == Thrift::Types::DOUBLE
       @prot.get_type_id_for_type_name("i16").should == Thrift::Types::I16
       @prot.get_type_id_for_type_name("i32").should == Thrift::Types::I32
       @prot.get_type_id_for_type_name("i64").should == Thrift::Types::I64
-      @prot.get_type_id_for_type_name("str").should == Thrift::Types::STRING
-      @prot.get_type_id_for_type_name("rec").should == Thrift::Types::STRUCT
+      @prot.get_type_id_for_type_name("string").should == Thrift::Types::STRING
+      @prot.get_type_id_for_type_name("struct").should == Thrift::Types::STRUCT
       @prot.get_type_id_for_type_name("map").should == Thrift::Types::MAP
       @prot.get_type_id_for_type_name("set").should == Thrift::Types::SET
-      @prot.get_type_id_for_type_name("lst").should == Thrift::Types::LIST
+      @prot.get_type_id_for_type_name("list").should == Thrift::Types::LIST
     end
 
     it "should read json syntax char" do
@@ -422,18 +422,17 @@ describe 'HumanReadableJsonProtocol' do
     end
 
     it "should read struct begin" do
-      @trans.write("{")
+      @trans.write("{\"struct_name\":\"name\",\"fields\":{")
       @prot.read_struct_begin.should == nil
     end
 
     it "should read struct end" do
-      @trans.write("}")
+      @trans.write("}}")
       @prot.read_struct_end.should == nil
     end
 
     it "should read field begin" do
-      # @trans.write("1{\"rec\"")
-      @trans.write("{\"name\":{\"field_id\":1,\"type\":\"rec\",\"value\"")
+      @trans.write("{\"name\":{\"field_id\":1,\"type\":\"struct\",\"value\"")
       @prot.read_json_object_start
       @prot.read_field_begin.should == [nil, 12, 1]
     end
@@ -444,7 +443,7 @@ describe 'HumanReadableJsonProtocol' do
     end
 
     it "should read map begin" do
-      @trans.write("{\"key_type\":\"rec\",\"value_type\":\"lst\",\"size\":2,\"entries\":{")
+      @trans.write("{\"key_type\":\"struct\",\"value_type\":\"list\",\"size\":2,\"entries\":{")
       @prot.read_map_begin.should == [12, 15, 2]
     end
 
@@ -454,7 +453,7 @@ describe 'HumanReadableJsonProtocol' do
     end
 
     it "should read list begin" do
-      @trans.write("{\"element_type\":\"rec\",\"size\":2,\"elements\":[")
+      @trans.write("{\"element_type\":\"struct\",\"size\":2,\"elements\":[")
       @prot.read_list_begin.should == [12, 2]
     end
 
@@ -464,7 +463,7 @@ describe 'HumanReadableJsonProtocol' do
     end
 
     it "should read set begin" do
-      @trans.write("{\"element_type\":\"rec\",\"size\":2,\"elements\":[")
+      @trans.write("{\"element_type\":\"struct\",\"size\":2,\"elements\":[")
       @prot.read_set_begin.should == [12, 2]
     end
 
