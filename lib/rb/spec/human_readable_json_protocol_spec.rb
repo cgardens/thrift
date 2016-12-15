@@ -19,6 +19,8 @@
 #
 
 require 'spec_helper'
+require 'thrift'
+require_relative '../lib/thrift_human_readable_json_protocol'
 
 describe 'HumanReadableJsonProtocol' do
 
@@ -62,24 +64,24 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write json integer" do
       @prot.write_json_integer(45)
-      @trans.read(@trans.available).should == "45"
+      @trans.read(@trans.available).should == "\"45\""
 
       @prot.write_json_integer(33000)
-      @trans.read(@trans.available).should == "33000"
+      @trans.read(@trans.available).should == "\"33000\""
 
       @prot.write_json_integer(3000000000)
-      @trans.read(@trans.available).should == "3000000000"
+      @trans.read(@trans.available).should == "\"3000000000\""
 
       @prot.write_json_integer(6000000000)
-      @trans.read(@trans.available).should == "6000000000"
+      @trans.read(@trans.available).should == "\"6000000000\""
     end
 
     it "should write json double" do
       @prot.write_json_double(12.3)
-      @trans.read(@trans.available).should == "12.3"
+      @trans.read(@trans.available).should == "\"12.3\""
 
       @prot.write_json_double(-3.21)
-      @trans.read(@trans.available).should == "-3.21"
+      @trans.read(@trans.available).should == "\"-3.21\""
 
       @prot.write_json_double(((+1.0/0.0)/(+1.0/0.0)))
       @trans.read(@trans.available).should == "\"NaN\""
@@ -113,7 +115,7 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write message begin" do
       @prot.write_message_begin("name", 12, 32)
-      @trans.read(@trans.available).should == "[1,\"name\",12,32"
+      @trans.read(@trans.available).should == "[\"1\",\"name\",\"12\",\"32\""
     end
 
     it "should write message end" do
@@ -134,7 +136,7 @@ describe 'HumanReadableJsonProtocol' do
     it "should write field begin" do
       @prot.write_json_object_start
       @prot.write_field_begin("name", Thrift::Types::STRUCT, 32)
-      @trans.read(@trans.available).should == "{\"name\":{\"field_id\":32,\"type\":\"struct\",\"value\""
+      @trans.read(@trans.available).should == "{\"name\":{\"field_id\":\"32\",\"type\":\"struct\",\"value\""
     end
 
     it "should write field end" do
@@ -149,7 +151,7 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write map begin" do
       @prot.write_map_begin(Thrift::Types::STRUCT, Thrift::Types::LIST, 32)
-      @trans.read(@trans.available).should == "{\"key_type\":\"struct\",\"value_type\":\"list\",\"size\":32,\"entries\":{"
+      @trans.read(@trans.available).should == "{\"key_type\":\"struct\",\"value_type\":\"list\",\"size\":\"32\",\"entries\":{"
     end
 
     it "should write map end" do
@@ -159,7 +161,7 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write list begin" do
       @prot.write_list_begin(Thrift::Types::STRUCT, 32)
-      @trans.read(@trans.available).should == "{\"element_type\":\"struct\",\"size\":32,\"elements\":["
+      @trans.read(@trans.available).should == "{\"element_type\":\"struct\",\"size\":\"32\",\"elements\":["
     end
 
     it "should write list end" do
@@ -169,7 +171,7 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write set begin" do
       @prot.write_set_begin(Thrift::Types::STRUCT, 32)
-      @trans.read(@trans.available).should == "{\"element_type\":\"struct\",\"size\":32,\"elements\":["
+      @trans.read(@trans.available).should == "{\"element_type\":\"struct\",\"size\":\"32\",\"elements\":["
     end
 
     it "should write set end" do
@@ -179,38 +181,38 @@ describe 'HumanReadableJsonProtocol' do
 
     it "should write bool" do
       @prot.write_bool(true)
-      @trans.read(@trans.available).should == "1"
+      @trans.read(@trans.available).should == "\"1\""
 
       @prot.write_bool(false)
-      @trans.read(@trans.available).should == "0"
+      @trans.read(@trans.available).should == "\"0\""
     end
 
     it "should write byte" do
       @prot.write_byte(100)
-      @trans.read(@trans.available).should == "100"
+      @trans.read(@trans.available).should == "\"100\""
     end
 
     it "should write i16" do
       @prot.write_i16(1000)
-      @trans.read(@trans.available).should == "1000"
+      @trans.read(@trans.available).should == "\"1000\""
     end
 
     it "should write i32" do
       @prot.write_i32(3000000000)
-      @trans.read(@trans.available).should == "3000000000"
+      @trans.read(@trans.available).should == "\"3000000000\""
     end
 
     it "should write i64" do
       @prot.write_i64(6000000000)
-      @trans.read(@trans.available).should == "6000000000"
+      @trans.read(@trans.available).should == "\"6000000000\""
     end
 
     it "should write double" do
       @prot.write_double(1.23)
-      @trans.read(@trans.available).should == "1.23"
+      @trans.read(@trans.available).should == "\"1.23\""
 
       @prot.write_double(-32.1)
-      @trans.read(@trans.available).should == "-32.1"
+      @trans.read(@trans.available).should == "\"-32.1\""
 
       @prot.write_double(((+1.0/0.0)/(+1.0/0.0)))
       @trans.read(@trans.available).should == "\"NaN\""

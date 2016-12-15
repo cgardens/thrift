@@ -323,13 +323,9 @@ module Thrift
     def write_json_integer(num)
       @context.write(trans)
       escapeNum = @context.escapeNum
-      if (escapeNum)
-        trans.write(@@kJSONStringDelimiter)
-      end
+      trans.write(@@kJSONStringDelimiter)
       trans.write(num.to_s);
-      if (escapeNum)
-        trans.write(@@kJSONStringDelimiter)
-      end
+      trans.write(@@kJSONStringDelimiter)
     end
 
     # Convert the given double to a JSON string, which is either the number,
@@ -351,14 +347,9 @@ module Thrift
         val = num.to_s
       end
 
-      escapeNum = special || @context.escapeNum
-      if (escapeNum)
-        trans.write(@@kJSONStringDelimiter)
-      end
+      trans.write(@@kJSONStringDelimiter)
       trans.write(val)
-      if (escapeNum)
-        trans.write(@@kJSONStringDelimiter)
-      end
+      trans.write(@@kJSONStringDelimiter)
     end
 
     def write_json_object_start
