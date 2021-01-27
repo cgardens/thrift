@@ -1,5 +1,5 @@
 # encoding: UTF-8
-# 
+#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements. See the NOTICE file
 # distributed with this work for additional information
@@ -7,16 +7,16 @@
 # to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
 # with the License. You may obtain a copy of the License at
-# 
+#
 #   http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 # KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations
 # under the License.
-# 
+#
 
 require 'base64'
 
@@ -300,6 +300,9 @@ module Thrift
     def write_json_string(str)
       @context.write(trans)
       trans.write(@@kJSONStringDelimiter)
+      if str.is_a?(Symbol)
+        str = str.to_s
+      end
       str.split('').each do |ch|
         write_json_char(ch)
       end
@@ -401,9 +404,18 @@ module Thrift
     end
 
     def write_field_begin(name, type, id)
-      write_json_integer(id)
-      write_json_object_start
+
+      write_json_string(name) # <field_name>
+      write_json_object_start # :{
+      write_json_string('field_id') # 1
+      write_json_integer(id) # <id>
+      write_json_string('type')
       write_json_string(get_type_name_for_type_id(type))
+      write_json_string('value')
+
+      # trans.write(',')
+      # write_comma # ,
+
     end
 
     def write_field_end
@@ -413,36 +425,52 @@ module Thrift
     def write_field_stop; nil; end
 
     def write_map_begin(ktype, vtype, size)
-      write_json_array_start
+      write_json_object_start
+      write_json_string('key_type')
       write_json_string(get_type_name_for_type_id(ktype))
+      write_json_string('value_type')
       write_json_string(get_type_name_for_type_id(vtype))
+      write_json_string('size')
       write_json_integer(size)
+      write_json_string('entries')
       write_json_object_start
     end
 
     def write_map_end
       write_json_object_end
-      write_json_array_end
+      write_json_object_end
+      # write_json_array_end
     end
 
     def write_list_begin(etype, size)
-      write_json_array_start
+      write_json_object_start
+      write_json_string('element_type')
       write_json_string(get_type_name_for_type_id(etype))
+      write_json_string('size')
       write_json_integer(size)
+      write_json_string('elements')
+      write_json_array_start
     end
 
     def write_list_end
       write_json_array_end
+      write_json_object_end
     end
 
     def write_set_begin(etype, size)
-      write_json_array_start
+      write_json_object_start
+      write_json_string('element_type')
       write_json_string(get_type_name_for_type_id(etype))
+      write_json_string('size')
       write_json_integer(size)
+      write_json_string('elements')
+      write_json_array_start
+
     end
 
     def write_set_end
       write_json_array_end
+      write_json_object_end
     end
 
     def write_bool(bool)
@@ -693,9 +721,17 @@ module Thrift
       if (ch == @@kJSONObjectEnd)
         field_type = Types::STOP
       else
-        field_id = read_json_integer
+        read_json_string
         read_json_object_start
+        read_json_string
+        field_id = read_json_integer
+        read_json_string
         field_type = get_type_id_for_type_name(read_json_string)
+        read_json_string
+
+        # field_id = read_json_integer
+        # read_json_object_start
+        # field_type = get_type_id_for_type_name(read_json_string)
       end
       [nil, field_type, field_id]
     end
@@ -705,35 +741,58 @@ module Thrift
     end
 
     def read_map_begin
-      read_json_array_start
+      read_json_object_start # {
+
+      read_json_string # "key_type"
       key_type = get_type_id_for_type_name(read_json_string)
+      read_json_string # "value_type"
       val_type = get_type_id_for_type_name(read_json_string)
+      read_json_string # "size"
       size = read_json_integer
+      read_json_string # "entries"
+      # @reader.read
+      # @@kJSONPairSeparator
       read_json_object_start
       [key_type, val_type, size]
     end
 
     def read_map_end
       read_json_object_end
-      read_json_array_end
+      read_json_object_end
+      # read_json_object_end
+      # read_json_array_end
     end
 
     def read_list_begin
+      read_json_object_start
+      read_json_string # "element_type"
+      type_name = read_json_string
+      read_json_string # "size"
+      size = read_json_integer
+      read_json_string # "elements"
       read_json_array_start
-      [get_type_id_for_type_name(read_json_string), read_json_integer]
+      [get_type_id_for_type_name(type_name), size]
     end
 
     def read_list_end
       read_json_array_end
+      read_json_object_end
     end
 
     def read_set_begin
+      read_json_object_start
+      read_json_string # "element_type"
+      type_name = read_json_string
+      read_json_string # "size"
+      size = read_json_integer
+      read_json_string # "elements"
       read_json_array_start
-      [get_type_id_for_type_name(read_json_string), read_json_integer]
+      [get_type_id_for_type_name(type_name), size]
     end
 
     def read_set_end
       read_json_array_end
+      read_json_object_end
     end
 
     def read_bool

@@ -79,7 +79,7 @@ module Thrift
         write_container(oprot, @value, field_info)
         oprot.write_field_end
       else
-        oprot.write_field(@setfield, type, fid, @value)
+        oprot.write_field(field_info, fid, @value)
       end
 
       oprot.write_field_stop
